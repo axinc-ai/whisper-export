@@ -12,6 +12,10 @@ from .audio import CHUNK_LENGTH
 from .tokenizer import Tokenizer, get_tokenizer
 from .utils import compression_ratio
 
+export_encoder = False
+export_decoder = False
+
+
 if TYPE_CHECKING:
     from .model import Whisper
 
@@ -136,10 +140,12 @@ class PyTorchInference(Inference):
 
     def logits(self, tokens: Tensor, audio_features: Tensor) -> Tensor:
         n_group = tokens.shape[0]
+        second_onward = False
         if self.kv_cache is None:
             self.kv_cache = self.model.new_kv_cache(n_group, self.initial_token_length)
             offset = 0
         else:
+            second_onward = True
             offset = self.kv_cache.shape[2]
             new_kv_cache = self.model.new_kv_cache(n_group, offset + 1)
             new_kv_cache[:, :, :-1, :] = self.kv_cache
@@ -150,25 +156,27 @@ class PyTorchInference(Inference):
             tokens = tokens[:, -1:]
 
         # export decoder as onnx
-        if True and self.kv_cache.shape[2] > self.initial_token_length:
+        if export_decoder and second_onward:
             print(f"tokens: {tokens.shape}")
             print(f"audio_features: {audio_features.shape}")
             print(f"kv_cache: {self.kv_cache.shape}")
+            print("------------------>")
             torch.onnx.export(
                 self.model.decoder,
                 (tokens, audio_features, torch.from_numpy(self.kv_cache), torch.tensor(offset)),
                 "decoder.onnx",
                 verbose=False,
-                opset_version=13,
+                opset_version=11,
                 input_names=["tokens", "audio_features", "kv_cache", "offset"],
                 output_names=["logits", "output_kv_cache"],
                 dynamic_axes={
                     "tokens": [0, 1],
-                    "audio_features": [0],
+                    "audio_features": [0, 1],
                     "kv_cache": [1, 2],
                     "output_kv_cache": [2],
                 }
             )
+            print("<------------------")
             exit()
         #output, self.kv_cache = self.model.decoder(tokens, audio_features, kv_cache=self.kv_cache, offset=offset)
         output, self.kv_cache = self.model.decoder(tokens, audio_features, kv_cache=torch.from_numpy(self.kv_cache), offset=torch.tensor(offset))
@@ -581,17 +589,24 @@ class DecodingTask:
         if mel.shape[-2:] == (self.model.dims.n_audio_ctx, self.model.dims.n_audio_state):
             # encoded audio features are given; skip audio encoding
             audio_features = mel
+        elif export_encoder:
+            # export encoder as onnx
+            print("------------------>")
+            torch.onnx.export(
+                self.model.encoder,
+                (mel),
+                "encoder.onnx",
+                verbose=False,
+                opset_version=11,
+                input_names=["mel"],
+                dynamic_axes={
+                    "mel": [2],
+                    "audio_features": [1],
+                },
+            )
+            print("<------------------")
+            exit()
         else:
-            # # export encoder as onnx
-            # torch.onnx.export(
-            #     self.model.encoder,
-            #     (mel),
-            #     "encoder.onnx",
-            #     verbose=True,
-            #     opset_version=13,
-            #     input_names=["mel"],
-            # )
-            # exit()
             audio_features = self.model.encoder(mel)
 
         if audio_features.dtype != (torch.float16 if self.options.fp16 else torch.float32):

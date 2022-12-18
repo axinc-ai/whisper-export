@@ -14,6 +14,8 @@ from huggingface_hub import hf_hub_download
 from .transcribe import transcribe as transcribe_function
 from .decoding import detect_language as detect_language_function, decode as decode_function
 
+model_name = "small"
+
 
 @dataclass
 class ModelDimensions:
@@ -90,7 +92,11 @@ class MultiHeadAttention(nn.Module):
             # small: 12
             # medium: 24
             # large: 32
-            key_id = self.layer_id - 4
+            key_id = self.layer_id - (
+                4 if model_name.startswith("tiny") else
+                6 if model_name.startswith("base") else
+                12 if model_name.startswith("tiny") else
+                24 if model_name.startswith("tiny") else 32)
             value_id = key_id + 1
             size = k.shape[1]
             kv_cache[key_id, :, -size:, :] = k

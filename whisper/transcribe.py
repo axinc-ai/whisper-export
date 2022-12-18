@@ -8,6 +8,8 @@ import torch
 import tqdm
 
 from .audio import SAMPLE_RATE, N_FRAMES, HOP_LENGTH, pad_or_trim, log_mel_spectrogram
+from . import decoding
+from . import model as mod_model
 from .decoding import DecodingOptions, DecodingResult
 from .tokenizer import LANGUAGES, TO_LANGUAGE_CODE, get_tokenizer
 from .utils import exact_div, format_timestamp, optional_int, optional_float, str2bool, write_txt, write_vtt, write_srt
@@ -276,11 +278,20 @@ def cli():
     parser.add_argument("--logprob_threshold", type=optional_float, default=-1.0, help="if the average log probability is lower than this value, treat the decoding as failed")
     parser.add_argument("--no_speech_threshold", type=optional_float, default=0.6, help="if the probability of the <|nospeech|> token is higher than this value AND the decoding has failed due to `logprob_threshold`, consider the segment as silence")
 
+    parser.add_argument("--export_encoder",  action='store_true')
+    parser.add_argument("--export_decoder",  action='store_true')
+
     args = parser.parse_args().__dict__
     model_name: str = args.pop("model")
     output_dir: str = args.pop("output_dir")
     device: str = "cpu"
     os.makedirs(output_dir, exist_ok=True)
+
+    mod_model.model_name = model_name
+    if args.pop("export_encoder"):
+        decoding.export_encoder = True
+    if args.pop("export_decoder"):
+        decoding.export_decoder = True
 
     if model_name.endswith(".en") and args["language"] not in {"en", "English"}:
         warnings.warn(f"{model_name} is an English-only model but receipted '{args['language']}'; using English instead.")
