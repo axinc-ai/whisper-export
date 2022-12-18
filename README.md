@@ -68,6 +68,8 @@ Whisper's performance varies widely depending on the language. The figure below 
 
 The following command will transcribe speech in audio files, using the `medium` model:
 
+    python3 cli.py audio.wav --model medium
+
     whisper audio.flac audio.mp3 audio.wav --model medium
 
 The default setting (which selects the `small` model) works well for transcribing English. To transcribe an audio file containing non-English speech, you can specify the language using the `--language` option:
