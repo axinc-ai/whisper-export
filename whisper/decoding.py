@@ -140,15 +140,17 @@ class PyTorchInference(Inference):
 
     def logits(self, tokens: Tensor, audio_features: Tensor) -> Tensor:
         n_group = tokens.shape[0]
-        second_onward = False
+        onnx = False
         if self.kv_cache is None:
             self.kv_cache = self.model.new_kv_cache(n_group, self.initial_token_length)
             offset = 0
+            length = self.initial_token_length
         else:
-            second_onward = True
+            onnx = True
             offset = self.kv_cache.shape[2]
+            length = offset + 1
             new_kv_cache = self.model.new_kv_cache(n_group, offset + 1)
-            new_kv_cache[:, :, :-1, :] = self.kv_cache
+            new_kv_cache[:, :, :offset, :] = self.kv_cache
             self.kv_cache = new_kv_cache
 
         if tokens.shape[-1] > self.initial_token_length:
@@ -156,7 +158,7 @@ class PyTorchInference(Inference):
             tokens = tokens[:, -1:]
 
         # export decoder as onnx
-        if export_decoder and second_onward:
+        if export_decoder and onnx:
             print(f"tokens: {tokens.shape}")
             print(f"audio_features: {audio_features.shape}")
             print(f"kv_cache: {self.kv_cache.shape}")
@@ -178,8 +180,8 @@ class PyTorchInference(Inference):
             )
             print("<------------------")
             exit()
-        #output, self.kv_cache = self.model.decoder(tokens, audio_features, kv_cache=self.kv_cache, offset=offset)
         output, self.kv_cache = self.model.decoder(tokens, audio_features, kv_cache=torch.from_numpy(self.kv_cache), offset=torch.tensor(offset))
+        self.kv_cache = self.kv_cache[:, :, :length, :]
         return output
 
     def cleanup_caching(self):
@@ -592,17 +594,18 @@ class DecodingTask:
         elif export_encoder:
             # export encoder as onnx
             print("------------------>")
+            mel = mel.float()
+            from torch.autograd import Variable
+            x = Variable(mel)
             torch.onnx.export(
-                self.model.encoder,
-                (mel),
-                "encoder.onnx",
-                verbose=False,
-                opset_version=11,
+                self.model.encoder, x, 'encoder.onnx',
                 input_names=["mel"],
+                output_names=["audio_features"],
                 dynamic_axes={
                     "mel": [2],
                     "audio_features": [1],
                 },
+                verbose=False, opset_version=11
             )
             print("<------------------")
             exit()

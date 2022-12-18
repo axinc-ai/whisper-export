@@ -79,7 +79,8 @@ class MultiHeadAttention(nn.Module):
         x: Tensor,
         xa: Optional[Tensor] = None,
         mask: Optional[Tensor] = None,
-        kv_cache: Optional[dict] = None,
+        kv_cache: Optional[Tensor] = None,
+        offset: Optional[Tensor] = None,
     ):
         q = self.query(x)
 
@@ -99,10 +100,10 @@ class MultiHeadAttention(nn.Module):
                 24 if model_name.startswith("tiny") else 32)
             value_id = key_id + 1
             size = k.shape[1]
-            kv_cache[key_id, :, -size:, :] = k
-            kv_cache[value_id, :, -size:, :] = v
-            k = kv_cache[key_id]
-            v = kv_cache[value_id]
+            kv_cache[key_id, :, offset:offset+size, :] = k
+            kv_cache[value_id, :, offset:offset+size, :] = v
+            k = kv_cache[key_id][:,:offset+size,:]
+            v = kv_cache[value_id][:,:offset+size,:]
 
         wv = self.qkv_attention(q, k, v, mask)
         return self.out(wv)
@@ -141,11 +142,12 @@ class ResidualAttentionBlock(nn.Module):
         x: Tensor,
         xa: Optional[Tensor] = None,
         mask: Optional[Tensor] = None,
-        kv_cache: Optional[dict] = None,
+        kv_cache: Optional[Tensor] = None,
+        offset: Optional[Tensor] = None,
     ):
-        x = x + self.attn(self.attn_ln(x), mask=mask, kv_cache=kv_cache)
+        x = x + self.attn(self.attn_ln(x), mask=mask, kv_cache=kv_cache, offset=offset)
         if self.cross_attn:
-            x = x + self.cross_attn(self.cross_attn_ln(x), xa, kv_cache=kv_cache)
+            x = x + self.cross_attn(self.cross_attn_ln(x), xa, kv_cache=kv_cache, offset=offset)
         x = x + self.mlp(self.mlp_ln(x))
         return x
 
@@ -207,7 +209,7 @@ class TextDecoder(nn.Module):
         x = x.to(xa.dtype)
 
         for block in self.blocks:
-            x = block(x, xa, mask=self.mask, kv_cache=kv_cache)
+            x = block(x, xa, mask=self.mask, kv_cache=kv_cache, offset=offset)
 
         x = self.ln(x)
         logits = (x @ torch.transpose(self.token_embedding.weight.to(x.dtype), 0, 1)).float()
@@ -300,6 +302,7 @@ class Whisper(nn.Module):
         return self.dims.n_vocab == 51865
 
     def new_kv_cache(self, n_group: int, length: int):
+        length = 451    # 3 (sot) + 1 (sot prev) + 224 + 223
         if self.type == "tiny.en" or self.type == "tiny":
             size = [8, n_group, length, 384]
         elif self.type == "base.en" or self.type == "base":
