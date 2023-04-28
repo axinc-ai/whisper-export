@@ -174,8 +174,7 @@ class PyTorchInference(Inference):
                 dynamic_axes={
                     "tokens": [0, 1],
                     "audio_features": [0, 1],
-                    "kv_cache": [1, 2],
-                    "output_kv_cache": [2],
+                    "kv_cache": [1]
                 }
             )
             print("<------------------")
@@ -601,10 +600,6 @@ class DecodingTask:
                 self.model.encoder, x, 'encoder.onnx',
                 input_names=["mel"],
                 output_names=["audio_features"],
-                dynamic_axes={
-                    "mel": [2],
-                    "audio_features": [1],
-                },
                 verbose=False, opset_version=11
             )
             print("<------------------")

@@ -279,7 +279,8 @@ def cli():
 
     parser.add_argument("--export_encoder",  action='store_true')
     parser.add_argument("--export_decoder",  action='store_true')
-
+    parser.add_argument("--fine_tuning",  type=str, default=None)
+    
     args = parser.parse_args().__dict__
     model_name: str = args.pop("model")
     output_dir: str = args.pop("output_dir")
@@ -305,6 +306,9 @@ def cli():
 
     from . import load_model
     model = load_model(model_name, device=device)
+    fine_tuning = args.pop("fine_tuning")
+    if fine_tuning:
+        model.load_state_dict(torch.load(fine_tuning), strict = False)
 
     for audio_path in args.pop("audio"):
         result = transcribe(model, audio_path, temperature=temperature, **args)
