@@ -1,4 +1,32 @@
-# Whisper
+# Whisper ONNX Export Script
+
+## ONNX Export
+
+This repository based on [whisper.openvino](https://github.com/zhuzilin/whisper-openvino), but
+OpenVinoAudioEncoder and OpenVinoTextDecoder were replaced by official AudioEncoder and TextDecoder for ONNX export.
+
+The following command will onnx export:
+
+```
+python3 cli.py audio.wav --model medium --export_encoder
+python3 cli.py audio.wav --model medium --export_decoder
+```
+
+You can also read weights saved_state_dicted from the original whisper.
+
+```
+python3 cli.py audio.wav --model medium --export_decoder --fine_tuning model.pth
+```
+
+The decoder fixes the size of kv_cache to avoid re-allocating tensors for each inference.
+
+## Requirements
+
+- windows or macOS or Linux
+- torch 2.0
+- onnx 1.13.1
+
+# Whisper Original information
 
 [[Blog]](https://openai.com/blog/whisper)
 [[Paper]](https://cdn.openai.com/papers/whisper.pdf)
@@ -71,12 +99,6 @@ The following command will transcribe speech in audio files, using the `medium` 
     python3 cli.py audio.wav --model medium
 
     whisper audio.flac audio.mp3 audio.wav --model medium
-
-The following command will onnx export:
-
-    python3 cli.py audio.wav --model medium --export_encoder
-
-    python3 cli.py audio.wav --model medium --export_decoder
 
 The default setting (which selects the `small` model) works well for transcribing English. To transcribe an audio file containing non-English speech, you can specify the language using the `--language` option:
 

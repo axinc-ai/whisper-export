@@ -308,7 +308,11 @@ def cli():
     model = load_model(model_name, device=device)
     fine_tuning = args.pop("fine_tuning")
     if fine_tuning:
-        model.load_state_dict(torch.load(fine_tuning), strict = False)
+        state_dict = torch.load(fine_tuning, map_location=device)
+        missing, unexpected = model.load_state_dict(state_dict, strict = True)
+        if len(missing) or len(unexpected):
+            print("Weight name not found", missing, unexpected)
+            raise
 
     for audio_path in args.pop("audio"):
         result = transcribe(model, audio_path, temperature=temperature, **args)
