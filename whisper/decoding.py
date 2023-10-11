@@ -166,7 +166,7 @@ class PyTorchInference(Inference):
             torch.onnx.export(
                 self.model.decoder,
                 (tokens, audio_features, torch.from_numpy(self.kv_cache), torch.tensor(offset)),
-                "decoder.onnx",
+                "export_model/decoder.onnx",
                 verbose=False,
                 opset_version=11,
                 input_names=["tokens", "audio_features", "kv_cache", "offset"],
@@ -597,7 +597,7 @@ class DecodingTask:
             from torch.autograd import Variable
             x = Variable(mel)
             torch.onnx.export(
-                self.model.encoder, x, 'encoder.onnx',
+                self.model.encoder, x, 'export_model/encoder.onnx',
                 input_names=["mel"],
                 output_names=["audio_features"],
                 verbose=False, opset_version=11
