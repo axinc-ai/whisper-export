@@ -96,8 +96,8 @@ class MultiHeadAttention(nn.Module):
             key_id = self.layer_id - (
                 4 if model_name.startswith("tiny") else
                 6 if model_name.startswith("base") else
-                12 if model_name.startswith("tiny") else
-                24 if model_name.startswith("tiny") else 32)
+                12 if model_name.startswith("small") else
+                24 if model_name.startswith("medium") else 32)
             value_id = key_id + 1
             size = k.shape[1]
             kv_cache[key_id, :, offset:offset+size, :] = k
