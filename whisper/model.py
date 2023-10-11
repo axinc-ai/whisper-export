@@ -13,6 +13,7 @@ from huggingface_hub import hf_hub_download
 
 from .transcribe import transcribe as transcribe_function
 from .decoding import detect_language as detect_language_function, decode as decode_function
+from .const import fix_kv_cache
 
 model_name = "small"
 
@@ -100,10 +101,16 @@ class MultiHeadAttention(nn.Module):
                 24 if model_name.startswith("medium") else 32)
             value_id = key_id + 1
             size = k.shape[1]
-            kv_cache[key_id, :, offset:offset+size, :] = k
-            kv_cache[value_id, :, offset:offset+size, :] = v
-            k = kv_cache[key_id][:,:offset+size,:]
-            v = kv_cache[value_id][:,:offset+size,:]
+            if fix_kv_cache:
+                kv_cache[key_id, :, offset:offset+size, :] = k
+                kv_cache[value_id, :, offset:offset+size, :] = v
+                k = kv_cache[key_id][:,:offset+size,:]
+                v = kv_cache[value_id][:,:offset+size,:]
+            else:
+                kv_cache[key_id, :, -size:, :] = k
+                kv_cache[value_id, :, -size:, :] = v
+                k = kv_cache[key_id]
+                v = kv_cache[value_id]
 
         wv = self.qkv_attention(q, k, v, mask)
         return self.out(wv)
@@ -282,7 +289,7 @@ class Whisper(nn.Module):
         return self.encoder.forward(mel)
 
     def logits(self, tokens: torch.Tensor, audio_features: torch.Tensor):
-        kv_cache = self.new_kv_cache(tokens.shape[0], tokens.shape[-1])
+        kv_cache = self.new_kv_cache(tokens.shape[0], tokens.shape[-1], fix_kv_cache)
         output, _ = self.decoder.forward(tokens, audio_features, kv_cache=torch.from_numpy(kv_cache), offset=0)
         # output, _ = self.decoder.forward(tokens, audio_features, kv_cache=kv_cache, offset=0)
         return output
@@ -301,8 +308,9 @@ class Whisper(nn.Module):
     def is_multilingual(self):
         return self.dims.n_vocab == 51865
 
-    def new_kv_cache(self, n_group: int, length: int):
-        length = 451    # 3 (sot) + 1 (sot prev) + 224 + 223
+    def new_kv_cache(self, n_group: int, length: int, fix_kv_cache: bool):
+        if fix_kv_cache:
+            length = 451    # 3 (sot) + 1 (sot prev) + 224 + 223
         if self.type == "tiny.en" or self.type == "tiny":
             size = [8, n_group, length, 384]
         elif self.type == "base.en" or self.type == "base":

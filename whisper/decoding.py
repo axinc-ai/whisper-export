@@ -11,6 +11,7 @@ from torch.distributions import Categorical
 from .audio import CHUNK_LENGTH
 from .tokenizer import Tokenizer, get_tokenizer
 from .utils import compression_ratio
+from .const import fix_kv_cache
 
 export_encoder = False
 export_decoder = False
@@ -142,15 +143,18 @@ class PyTorchInference(Inference):
         n_group = tokens.shape[0]
         onnx = False
         if self.kv_cache is None:
-            self.kv_cache = self.model.new_kv_cache(n_group, self.initial_token_length)
+            self.kv_cache = self.model.new_kv_cache(n_group, self.initial_token_length, fix_kv_cache)
             offset = 0
             length = self.initial_token_length
         else:
             onnx = True
             offset = self.kv_cache.shape[2]
             length = offset + 1
-            new_kv_cache = self.model.new_kv_cache(n_group, offset + 1)
-            new_kv_cache[:, :, :offset, :] = self.kv_cache
+            new_kv_cache = self.model.new_kv_cache(n_group, length, fix_kv_cache)
+            if fix_kv_cache:
+                new_kv_cache[:, :, :offset, :] = self.kv_cache
+            else:
+                new_kv_cache[:, :, :-1, :] = self.kv_cache
             self.kv_cache = new_kv_cache
 
         if tokens.shape[-1] > self.initial_token_length:
