@@ -178,7 +178,7 @@ class PyTorchInference(Inference):
                 dynamic_axes={
                     "tokens": [0, 1],
                     "audio_features": [0, 1],
-                    "kv_cache": [1]
+                    "kv_cache": [1] if fix_kv_cache else [1, 2]
                 }
             )
             print("<------------------")
