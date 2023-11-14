@@ -290,19 +290,21 @@ class Whisper(nn.Module):
 
     def logits(self, tokens: torch.Tensor, audio_features: torch.Tensor):
         kv_cache = self.new_kv_cache(tokens.shape[0], tokens.shape[-1], fix_kv_cache)
-        output, _ = self.decoder.forward(tokens, audio_features, kv_cache=torch.from_numpy(kv_cache), offset=0)
+        kv_cache = torch.from_numpy(kv_cache).to(audio_features.device, audio_features.dtype)
+        output, _ = self.decoder.forward(tokens, audio_features, kv_cache=kv_cache, offset=0)
         # output, _ = self.decoder.forward(tokens, audio_features, kv_cache=kv_cache, offset=0)
         return output
 
     def forward(self, mel: torch.Tensor, tokens: torch.Tensor) -> Dict[str, torch.Tensor]:
         kv_cache = self.new_kv_cache(tokens.shape[0], tokens.shape[-1])
-        output, _ = self.decoder(tokens, self.encoder(mel), kv_cache=torch.from_numpy(kv_cache), offset=0)
+        kv_cache = torch.from_numpy(kv_cache).to(audio_features.device, audio_features.dtype)
+        output, _ = self.decoder(tokens, self.encoder(mel), kv_cache=kv_cache, offset=0)
         # output, _ = self.decoder(tokens, self.encoder(mel), kv_cache=kv_cache, offset=0)
         return output
 
     @property
     def device(self):
-        return torch.device("cpu")
+        return next(self.parameters()).device
 
     @property
     def is_multilingual(self):

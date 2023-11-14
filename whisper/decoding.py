@@ -185,8 +185,9 @@ class PyTorchInference(Inference):
             )
             print("<------------------")
             exit()
-        output, self.kv_cache = self.model.decoder(tokens, audio_features, kv_cache=torch.from_numpy(self.kv_cache), offset=torch.tensor(offset))
-        self.kv_cache = self.kv_cache[:, :, :length, :]
+        kv_cache = torch.from_numpy(self.kv_cache).to(audio_features.device, audio_features.dtype)
+        output, self.kv_cache = self.model.decoder(tokens, audio_features, kv_cache=kv_cache, offset=torch.tensor(offset))
+        self.kv_cache = self.kv_cache[:, :, :length, :].cpu().detach().numpy()
         return output
 
     def cleanup_caching(self):
