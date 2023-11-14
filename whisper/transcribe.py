@@ -7,7 +7,15 @@ import numpy as np
 import torch
 import tqdm
 
-from .audio import SAMPLE_RATE, N_FRAMES, HOP_LENGTH, pad_or_trim, log_mel_spectrogram
+from .audio import (
+    FRAMES_PER_SECOND,
+    HOP_LENGTH,
+    N_FRAMES,
+    N_SAMPLES,
+    SAMPLE_RATE,
+    log_mel_spectrogram,
+    pad_or_trim,
+)
 from . import decoding
 from . import model as mod_model
 from .decoding import DecodingOptions, DecodingResult
@@ -83,7 +91,8 @@ def transcribe(
     if dtype == torch.float32:
         decode_options["fp16"] = False
 
-    mel = log_mel_spectrogram(audio)
+    mel = log_mel_spectrogram(audio, model.dims.n_mels, padding=N_SAMPLES)
+    content_frames = mel.shape[-1] - N_FRAMES
 
     if decode_options.get("language", None) is None:
         if verbose:
@@ -170,12 +179,10 @@ def transcribe(
         if verbose:
             print(f"[{format_timestamp(start)} --> {format_timestamp(end)}] {text}", flush=True)
 
-    # show the progress bar when verbose is False (otherwise the transcribed text will be printed)
-    num_frames = mel.shape[-1]
-    previous_seek_value = seek
-
-    with tqdm.tqdm(total=num_frames, unit='frames', disable=verbose is not False) as pbar:
-        while seek < num_frames:
+    with tqdm.tqdm(
+        total=content_frames, unit="frames", disable=verbose is not False
+    ) as pbar:
+        while seek < content_frames:
             timestamp_offset = float(seek * HOP_LENGTH / SAMPLE_RATE)
             segment = pad_or_trim(mel[:, :, seek:], N_FRAMES).to(model.device).to(dtype)
             segment_duration = segment.shape[-1] * HOP_LENGTH / SAMPLE_RATE
@@ -194,6 +201,8 @@ def transcribe(
                 if should_skip:
                     seek += segment.shape[-1]  # fast-forward to the next segment boundary
                     continue
+
+            previous_seek = seek
 
             timestamp_tokens: torch.Tensor = tokens.ge(tokenizer.timestamp_begin)
             consecutive = torch.where(timestamp_tokens[:-1] & timestamp_tokens[1:])[0].add_(1)
@@ -243,8 +252,7 @@ def transcribe(
                 prompt_reset_since = len(all_tokens)
 
             # update progress bar
-            pbar.update(min(num_frames, seek) - previous_seek_value)
-            previous_seek_value = seek
+            pbar.update(min(content_frames, seek) - previous_seek)
 
     return dict(text=tokenizer.decode(all_tokens[len(initial_prompt):]), segments=all_segments, language=language)
 
