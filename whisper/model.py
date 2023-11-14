@@ -306,7 +306,11 @@ class Whisper(nn.Module):
 
     @property
     def is_multilingual(self):
-        return self.dims.n_vocab == 51865
+        return self.dims.n_vocab >= 51865
+
+    @property
+    def num_languages(self):
+        return self.dims.n_vocab - 51765 - int(self.is_multilingual)
 
     def new_kv_cache(self, n_group: int, length: int, fix_kv_cache: bool):
         if fix_kv_cache:
@@ -319,7 +323,7 @@ class Whisper(nn.Module):
             size = [24, n_group, length, 768]
         elif self.type == "medium.en" or self.type == "medium":
             size = [48, n_group, length, 1024]
-        elif self.type == "large":
+        elif self.type.startswith("large"):
             size = [64, n_group, length, 1280]
         else:
             raise ValueError(f"Unsupported model type: {self.type}")

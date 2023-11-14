@@ -36,7 +36,9 @@ def detect_language(model: "Whisper", mel: Tensor, tokenizer: Tokenizer = None) 
         list of dictionaries containing the probability distribution over all languages.
     """
     if tokenizer is None:
-        tokenizer = get_tokenizer(model.is_multilingual)
+        tokenizer = get_tokenizer(
+            model.is_multilingual, num_languages=model.num_languages
+        )
     if tokenizer.language is None or tokenizer.language_token not in tokenizer.sot_sequence:
         raise ValueError(f"This model doesn't have language tokens so it can't perform lang id")
 
@@ -484,7 +486,12 @@ class DecodingTask:
         self.model = model
 
         language = options.language or "en"
-        tokenizer = get_tokenizer(model.is_multilingual, language=language, task=options.task)
+        tokenizer = get_tokenizer(
+            model.is_multilingual,
+            num_languages=model.num_languages,
+            language=language,
+            task=options.task,
+        )
         self.tokenizer: Tokenizer = tokenizer
         self.options: DecodingOptions = self._verify_options(options)
 

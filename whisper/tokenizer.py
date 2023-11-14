@@ -28,7 +28,7 @@ LANGUAGES = {
     "hi": "hindi",
     "fi": "finnish",
     "vi": "vietnamese",
-    "iw": "hebrew",
+    "he": "hebrew",
     "uk": "ukrainian",
     "el": "greek",
     "ms": "malay",
@@ -107,6 +107,7 @@ LANGUAGES = {
     "ba": "bashkir",
     "jw": "javanese",
     "su": "sundanese",
+    "yue": "cantonese",
 }
 
 # language code lookup by name, with a few language aliases
@@ -123,6 +124,7 @@ TO_LANGUAGE_CODE = {
     "moldovan": "ro",
     "sinhalese": "si",
     "castilian": "es",
+    "mandarin": "zh",
 }
 
 
@@ -271,14 +273,14 @@ class Tokenizer:
 
 
 @lru_cache(maxsize=None)
-def build_tokenizer(name: str = "gpt2"):
+def build_tokenizer(name: str = "gpt2", num_languages: int = 99):
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     path = os.path.join(os.path.dirname(__file__), "assets", name)
     tokenizer = GPT2TokenizerFast.from_pretrained(path)
 
     specials = [
         "<|startoftranscript|>",
-        *[f"<|{lang}|>" for lang in LANGUAGES.keys()],
+        *[f"<|{lang}|>" for lang in list(LANGUAGES.keys())[:num_languages]],
         "<|translate|>",
         "<|transcribe|>",
         "<|startoflm|>",
@@ -295,8 +297,9 @@ def build_tokenizer(name: str = "gpt2"):
 def get_tokenizer(
     multilingual: bool,
     *,
-    task: Optional[str] = None,  # Literal["transcribe", "translate", None]
+    num_languages: int = 99,
     language: Optional[str] = None,
+    task: Optional[str] = None,  # Literal["transcribe", "translate", None]
 ) -> Tokenizer:
     if language is not None:
         language = language.lower()
@@ -315,7 +318,7 @@ def get_tokenizer(
         task = None
         language = None
 
-    tokenizer = build_tokenizer(name=tokenizer_name)
+    tokenizer = build_tokenizer(name=tokenizer_name, num_languages=num_languages)
     all_special_ids: List[int] = tokenizer.all_special_ids
     sot: int = all_special_ids[1]
     translate: int = all_special_ids[-6]
