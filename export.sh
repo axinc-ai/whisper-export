@@ -1,0 +1,10 @@
+python3 cli.py audio.wav --model tiny --export_encoder
+python3 cli.py audio.wav --model tiny --export_decoder
+python3 cli.py audio.wav --model base --export_encoder
+python3 cli.py audio.wav --model base --export_decoder
+python3 cli.py audio.wav --model medium --export_encoder
+python3 cli.py audio.wav --model medium --export_decoder
+#python3 cli.py audio.wav --model large --export_encoder
+#python3 cli.py audio.wav --model large --export_decoder
+#python3 cli.py audio.wav --model large-v3 --export_encoder
+#python3 cli.py audio.wav --model large-v3 --export_decoder
