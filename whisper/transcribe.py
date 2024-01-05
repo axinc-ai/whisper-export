@@ -317,6 +317,7 @@ def cli():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("audio", nargs="+", type=str, help="audio file(s) to transcribe")
     parser.add_argument("--model", default="small", choices=available_models(), help="name of the Whisper model to use")
+    parser.add_argument("--opset", default=17, choices=[11, 17], help="opset of the ONNX")
     parser.add_argument("--device", default="cpu", help="device to use for PyTorch inference")
     parser.add_argument("--output_dir", "-o", type=str, default=".", help="directory to save the outputs")
     parser.add_argument("--verbose", type=str2bool, default=True, help="whether to print out the progress and debug messages")
@@ -351,6 +352,12 @@ def cli():
     os.makedirs(output_dir, exist_ok=True)
 
     mod_model.model_name = model_name
+
+    opset: int = args.pop("opset")
+
+    decoding.model_name = model_name
+    decoding.opset = opset
+
     if args.pop("export_encoder"):
         decoding.export_encoder = True
     if args.pop("export_decoder"):

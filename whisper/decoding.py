@@ -16,6 +16,9 @@ from .const import fix_kv_cache
 export_encoder = False
 export_decoder = False
 
+model_name = "undefined"
+opset = -1
+
 
 if TYPE_CHECKING:
     from .model import Whisper
@@ -172,9 +175,9 @@ class PyTorchInference(Inference):
             torch.onnx.export(
                 self.model.decoder,
                 (tokens, audio_features, torch.from_numpy(self.kv_cache), torch.tensor(offset)),
-                "export_model/decoder.onnx",
+                "export_model/decoder"+model_name+"_"+str(opset)+".onnx",
                 verbose=False,
-                opset_version=17,
+                opset_version=opset,
                 input_names=["tokens", "audio_features", "kv_cache", "offset"],
                 output_names=["logits", "output_kv_cache"],
                 dynamic_axes={
@@ -609,10 +612,10 @@ class DecodingTask:
             from torch.autograd import Variable
             x = Variable(mel)
             torch.onnx.export(
-                self.model.encoder, x, 'export_model/encoder.onnx',
+                self.model.encoder, x, 'export_model/encoder_'+model_name+'_opset'+str(opset)+'.onnx',
                 input_names=["mel"],
                 output_names=["audio_features"],
-                verbose=False, opset_version=17
+                verbose=False, opset_version=opset
             )
             print("<------------------")
             exit()
