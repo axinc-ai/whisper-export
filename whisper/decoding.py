@@ -174,7 +174,7 @@ class PyTorchInference(Inference):
                 (tokens, audio_features, torch.from_numpy(self.kv_cache), torch.tensor(offset)),
                 "export_model/decoder.onnx",
                 verbose=False,
-                opset_version=11,
+                opset_version=17,
                 input_names=["tokens", "audio_features", "kv_cache", "offset"],
                 output_names=["logits", "output_kv_cache"],
                 dynamic_axes={
@@ -612,7 +612,7 @@ class DecodingTask:
                 self.model.encoder, x, 'export_model/encoder.onnx',
                 input_names=["mel"],
                 output_names=["audio_features"],
-                verbose=False, opset_version=11
+                verbose=False, opset_version=17
             )
             print("<------------------")
             exit()
