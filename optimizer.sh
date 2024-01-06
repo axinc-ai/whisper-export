@@ -1,5 +1,5 @@
-#for i in large large-v3
 mkdir optimize_model
+#for i in large large-v3
 for i in tiny base small medium
 do
 python3 onnx_optimizer.py export_model/encoder_${i}_opset17.onnx
