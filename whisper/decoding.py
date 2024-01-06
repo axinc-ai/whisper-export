@@ -175,7 +175,7 @@ class PyTorchInference(Inference):
             torch.onnx.export(
                 self.model.decoder,
                 (tokens, audio_features, torch.from_numpy(self.kv_cache), torch.tensor(offset)),
-                "export_model/decoder"+model_name+"_"+str(opset)+".onnx",
+                "export_model/decoder_"+model_name+"_opset"+str(opset)+".onnx",
                 verbose=False,
                 opset_version=opset,
                 input_names=["tokens", "audio_features", "kv_cache", "offset"],

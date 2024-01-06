@@ -1,0 +1,795 @@
+{
+  "remove_node": [
+    "/blocks.0/attn/Concat_output_0",
+    "/blocks.0/attn/Concat_2_output_0",
+    "/blocks.1/attn/Concat_output_0",
+    "/blocks.1/attn/Concat_2_output_0",
+    "/blocks.2/attn/Concat_output_0",
+    "/blocks.2/attn/Concat_2_output_0",
+    "/blocks.3/attn/Concat_output_0",
+    "/blocks.3/attn/Concat_2_output_0",
+    "/blocks.4/attn/Concat_output_0",
+    "/blocks.4/attn/Concat_2_output_0",
+    "/blocks.5/attn/Concat_output_0",
+    "/blocks.5/attn/Concat_2_output_0",
+    "/blocks.6/attn/Concat_output_0",
+    "/blocks.6/attn/Concat_2_output_0",
+    "/blocks.7/attn/Concat_output_0",
+    "/blocks.7/attn/Concat_2_output_0",
+    "/blocks.8/attn/Concat_output_0",
+    "/blocks.8/attn/Concat_2_output_0",
+    "/blocks.9/attn/Concat_output_0",
+    "/blocks.9/attn/Concat_2_output_0",
+    "/blocks.10/attn/Concat_output_0",
+    "/blocks.10/attn/Concat_2_output_0",
+    "/blocks.11/attn/Concat_output_0",
+    "/blocks.11/attn/Concat_2_output_0",
+    "/blocks.12/attn/Concat_output_0",
+    "/blocks.12/attn/Concat_2_output_0",
+    "/blocks.13/attn/Concat_output_0",
+    "/blocks.13/attn/Concat_2_output_0",
+    "/blocks.14/attn/Concat_output_0",
+    "/blocks.14/attn/Concat_2_output_0",
+    "/blocks.15/attn/Concat_output_0",
+    "/blocks.15/attn/Concat_2_output_0",
+    "/blocks.16/attn/Concat_output_0",
+    "/blocks.16/attn/Concat_2_output_0",
+    "/blocks.17/attn/Concat_output_0",
+    "/blocks.17/attn/Concat_2_output_0",
+    "/blocks.18/attn/Concat_output_0",
+    "/blocks.18/attn/Concat_2_output_0",
+    "/blocks.19/attn/Concat_output_0",
+    "/blocks.19/attn/Concat_2_output_0",
+    "/blocks.20/attn/Concat_output_0",
+    "/blocks.20/attn/Concat_2_output_0",
+    "/blocks.21/attn/Concat_output_0",
+    "/blocks.21/attn/Concat_2_output_0",
+    "/blocks.22/attn/Concat_output_0",
+    "/blocks.22/attn/Concat_2_output_0",
+    "/blocks.23/attn/Concat_output_0",
+    "/blocks.23/attn/Concat_2_output_0",
+    "/blocks.0/attn/Reshape_2_output_0",
+    "/blocks.0/attn/Reshape_5_output_0",
+    "/blocks.1/attn/Reshape_2_output_0",
+    "/blocks.1/attn/Reshape_5_output_0",
+    "/blocks.2/attn/Reshape_2_output_0",
+    "/blocks.2/attn/Reshape_5_output_0",
+    "/blocks.3/attn/Reshape_2_output_0",
+    "/blocks.3/attn/Reshape_5_output_0",
+    "/blocks.4/attn/Reshape_2_output_0",
+    "/blocks.4/attn/Reshape_5_output_0",
+    "/blocks.5/attn/Reshape_2_output_0",
+    "/blocks.5/attn/Reshape_5_output_0",
+    "/blocks.6/attn/Reshape_2_output_0",
+    "/blocks.6/attn/Reshape_5_output_0",
+    "/blocks.7/attn/Reshape_2_output_0",
+    "/blocks.7/attn/Reshape_5_output_0",
+    "/blocks.8/attn/Reshape_2_output_0",
+    "/blocks.8/attn/Reshape_5_output_0",
+    "/blocks.9/attn/Reshape_2_output_0",
+    "/blocks.9/attn/Reshape_5_output_0",
+    "/blocks.10/attn/Reshape_2_output_0",
+    "/blocks.10/attn/Reshape_5_output_0",
+    "/blocks.11/attn/Reshape_2_output_0",
+    "/blocks.11/attn/Reshape_5_output_0",
+    "/blocks.12/attn/Reshape_2_output_0",
+    "/blocks.12/attn/Reshape_5_output_0",
+    "/blocks.13/attn/Reshape_2_output_0",
+    "/blocks.13/attn/Reshape_5_output_0",
+    "/blocks.14/attn/Reshape_2_output_0",
+    "/blocks.14/attn/Reshape_5_output_0",
+    "/blocks.15/attn/Reshape_2_output_0",
+    "/blocks.15/attn/Reshape_5_output_0",
+    "/blocks.16/attn/Reshape_2_output_0",
+    "/blocks.16/attn/Reshape_5_output_0",
+    "/blocks.17/attn/Reshape_2_output_0",
+    "/blocks.17/attn/Reshape_5_output_0",
+    "/blocks.18/attn/Reshape_2_output_0",
+    "/blocks.18/attn/Reshape_5_output_0",
+    "/blocks.19/attn/Reshape_2_output_0",
+    "/blocks.19/attn/Reshape_5_output_0",
+    "/blocks.20/attn/Reshape_2_output_0",
+    "/blocks.20/attn/Reshape_5_output_0",
+    "/blocks.21/attn/Reshape_2_output_0",
+    "/blocks.21/attn/Reshape_5_output_0",
+    "/blocks.22/attn/Reshape_2_output_0",
+    "/blocks.22/attn/Reshape_5_output_0",
+    "/blocks.23/attn/Reshape_2_output_0",
+    "/blocks.23/attn/Reshape_5_output_0"
+  ],
+  "replace_blob": {
+    "/blocks.0/attn/Concat_output_0": "indices.0",
+    "/blocks.0/attn/Concat_2_output_0": "indices.1",
+    "/blocks.1/attn/Concat_output_0": "indices.2",
+    "/blocks.1/attn/Concat_2_output_0": "indices.3",
+    "/blocks.2/attn/Concat_output_0": "indices.4",
+    "/blocks.2/attn/Concat_2_output_0": "indices.5",
+    "/blocks.3/attn/Concat_output_0": "indices.6",
+    "/blocks.3/attn/Concat_2_output_0": "indices.7",
+    "/blocks.4/attn/Concat_output_0": "indices.8",
+    "/blocks.4/attn/Concat_2_output_0": "indices.9",
+    "/blocks.5/attn/Concat_output_0": "indices.10",
+    "/blocks.5/attn/Concat_2_output_0": "indices.11",
+    "/blocks.6/attn/Concat_output_0": "indices.12",
+    "/blocks.6/attn/Concat_2_output_0": "indices.13",
+    "/blocks.7/attn/Concat_output_0": "indices.14",
+    "/blocks.7/attn/Concat_2_output_0": "indices.15",
+    "/blocks.8/attn/Concat_output_0": "indices.16",
+    "/blocks.8/attn/Concat_2_output_0": "indices.17",
+    "/blocks.9/attn/Concat_output_0": "indices.18",
+    "/blocks.9/attn/Concat_2_output_0": "indices.19",
+    "/blocks.10/attn/Concat_output_0": "indices.20",
+    "/blocks.10/attn/Concat_2_output_0": "indices.21",
+    "/blocks.11/attn/Concat_output_0": "indices.22",
+    "/blocks.11/attn/Concat_2_output_0": "indices.23",
+    "/blocks.12/attn/Concat_output_0": "indices.24",
+    "/blocks.12/attn/Concat_2_output_0": "indices.25",
+    "/blocks.13/attn/Concat_output_0": "indices.26",
+    "/blocks.13/attn/Concat_2_output_0": "indices.27",
+    "/blocks.14/attn/Concat_output_0": "indices.28",
+    "/blocks.14/attn/Concat_2_output_0": "indices.29",
+    "/blocks.15/attn/Concat_output_0": "indices.30",
+    "/blocks.15/attn/Concat_2_output_0": "indices.31",
+    "/blocks.16/attn/Concat_output_0": "indices.32",
+    "/blocks.16/attn/Concat_2_output_0": "indices.33",
+    "/blocks.17/attn/Concat_output_0": "indices.34",
+    "/blocks.17/attn/Concat_2_output_0": "indices.35",
+    "/blocks.18/attn/Concat_output_0": "indices.36",
+    "/blocks.18/attn/Concat_2_output_0": "indices.37",
+    "/blocks.19/attn/Concat_output_0": "indices.38",
+    "/blocks.19/attn/Concat_2_output_0": "indices.39",
+    "/blocks.20/attn/Concat_output_0": "indices.40",
+    "/blocks.20/attn/Concat_2_output_0": "indices.41",
+    "/blocks.21/attn/Concat_output_0": "indices.42",
+    "/blocks.21/attn/Concat_2_output_0": "indices.43",
+    "/blocks.22/attn/Concat_output_0": "indices.44",
+    "/blocks.22/attn/Concat_2_output_0": "indices.45",
+    "/blocks.23/attn/Concat_output_0": "indices.46",
+    "/blocks.23/attn/Concat_2_output_0": "indices.47",
+    "/blocks.0/attn/Reshape_2_output_0": "updates.0",
+    "/blocks.0/attn/Reshape_5_output_0": "updates.1",
+    "/blocks.1/attn/Reshape_2_output_0": "updates.2",
+    "/blocks.1/attn/Reshape_5_output_0": "updates.3",
+    "/blocks.2/attn/Reshape_2_output_0": "updates.4",
+    "/blocks.2/attn/Reshape_5_output_0": "updates.5",
+    "/blocks.3/attn/Reshape_2_output_0": "updates.6",
+    "/blocks.3/attn/Reshape_5_output_0": "updates.7",
+    "/blocks.4/attn/Reshape_2_output_0": "updates.8",
+    "/blocks.4/attn/Reshape_5_output_0": "updates.9",
+    "/blocks.5/attn/Reshape_2_output_0": "updates.10",
+    "/blocks.5/attn/Reshape_5_output_0": "updates.11",
+    "/blocks.6/attn/Reshape_2_output_0": "updates.12",
+    "/blocks.6/attn/Reshape_5_output_0": "updates.13",
+    "/blocks.7/attn/Reshape_2_output_0": "updates.14",
+    "/blocks.7/attn/Reshape_5_output_0": "updates.15",
+    "/blocks.8/attn/Reshape_2_output_0": "updates.16",
+    "/blocks.8/attn/Reshape_5_output_0": "updates.17",
+    "/blocks.9/attn/Reshape_2_output_0": "updates.18",
+    "/blocks.9/attn/Reshape_5_output_0": "updates.19",
+    "/blocks.10/attn/Reshape_2_output_0": "updates.20",
+    "/blocks.10/attn/Reshape_5_output_0": "updates.21",
+    "/blocks.11/attn/Reshape_2_output_0": "updates.22",
+    "/blocks.11/attn/Reshape_5_output_0": "updates.23",
+    "/blocks.12/attn/Reshape_2_output_0": "updates.24",
+    "/blocks.12/attn/Reshape_5_output_0": "updates.25",
+    "/blocks.13/attn/Reshape_2_output_0": "updates.26",
+    "/blocks.13/attn/Reshape_5_output_0": "updates.27",
+    "/blocks.14/attn/Reshape_2_output_0": "updates.28",
+    "/blocks.14/attn/Reshape_5_output_0": "updates.29",
+    "/blocks.15/attn/Reshape_2_output_0": "updates.30",
+    "/blocks.15/attn/Reshape_5_output_0": "updates.31",
+    "/blocks.16/attn/Reshape_2_output_0": "updates.32",
+    "/blocks.16/attn/Reshape_5_output_0": "updates.33",
+    "/blocks.17/attn/Reshape_2_output_0": "updates.34",
+    "/blocks.17/attn/Reshape_5_output_0": "updates.35",
+    "/blocks.18/attn/Reshape_2_output_0": "updates.36",
+    "/blocks.18/attn/Reshape_5_output_0": "updates.37",
+    "/blocks.19/attn/Reshape_2_output_0": "updates.38",
+    "/blocks.19/attn/Reshape_5_output_0": "updates.39",
+    "/blocks.20/attn/Reshape_2_output_0": "updates.40",
+    "/blocks.20/attn/Reshape_5_output_0": "updates.41",
+    "/blocks.21/attn/Reshape_2_output_0": "updates.42",
+    "/blocks.21/attn/Reshape_5_output_0": "updates.43",
+    "/blocks.22/attn/Reshape_2_output_0": "updates.44",
+    "/blocks.22/attn/Reshape_5_output_0": "updates.45",
+    "/blocks.23/attn/Reshape_2_output_0": "updates.46",
+    "/blocks.23/attn/Reshape_5_output_0": "updates.47"
+  },
+  "insert_node": {
+    "/Shape_output_0": {
+      "input": ["/Shape_output_0", "zero_int64_scalar"],
+      "output": ["beam_size"],
+      "op_type": "Gather"
+    },
+    "beam_size": {
+      "input": ["/Shape_output_0", "one_int64_scalar"],
+      "output": ["token_length"],
+      "op_type": "Gather"
+    },
+    "token_length": {
+      "input": ["beam_size", "one_int64_dim1"],
+      "output": ["indices_base_shape_1"],
+      "op_type": "Reshape"
+    },
+    "indices_base_shape_1": {
+      "input": ["token_length", "one_int64_dim1"],
+      "output": ["indices_base_shape_2"],
+      "op_type": "Reshape"
+    },
+    "indices_base_shape_2": {
+      "input": ["one_int64_dim1", "indices_base_shape_1", "indices_base_shape_2", "one_int64_dim1"],
+      "output": ["indices_base_shape"],
+      "op_type": "Concat",
+      "attribute": { "axis": 0 }
+    },
+    "indices_base_shape": {
+      "input": ["one_int64_dim1", "indices_base_shape_1", "indices_base_shape_2", "1024_int64_dim1"],
+      "output": ["updates_shape"],
+      "op_type": "Concat",
+      "attribute": { "axis": 0 }
+    },
+    "updates_shape": {
+      "input": ["zero_int64_dim1", "indices_base_shape"],
+      "output": ["indices_base_a.x"],
+      "op_type": "Expand"
+    },
+    "indices_base_a.x": {
+      "input": ["zero_int64_scalar", "beam_size", "one_int64_scalar"],
+      "output": ["indices_base_b.data"],
+      "op_type": "Range"
+    },
+    "indices_base_b.data": {
+      "input": ["indices_base_b.data", "indices_base_b.shape"],
+      "output": ["indices_base_b"],
+      "op_type": "Reshape"
+    },
+    "indices_base_b": {
+      "input": ["offset", "token_length"],
+      "output": ["indices_base_c.tail"],
+      "op_type": "Add"
+    },
+    "indices_base_c.tail": {
+      "input": ["offset", "indices_base_c.tail", "one_int64_scalar"],
+      "output": ["indices_base_c.data"],
+      "op_type": "Range"
+    },
+    "indices_base_c.data": {
+      "input": ["indices_base_c.data", "indices_base_c.shape"],
+      "output": ["indices_base_c"],
+      "op_type": "Reshape"
+    },
+    "indices_base_c": {
+      "input": ["indices_base_b", "indices_base_shape"],
+      "output": ["indices_base_b.x"],
+      "op_type": "Expand"
+    },
+    "indices_base_b.x": {
+      "input": ["indices_base_c", "indices_base_shape"],
+      "output": ["indices_base_c.x"],
+      "op_type": "Expand"
+    },
+    "indices_base_c.x": {
+      "input": ["indices_base_a.x", "indices_base_b.x", "indices_base_c.x"],
+      "output": ["indices.0"],
+      "op_type": "Concat",
+      "attribute": { "axis": -1 }
+    },
+    "indices.0": {
+      "input": ["indices.0", "indices_increment"],
+      "output": ["indices.1"],
+      "op_type": "Add"
+    },
+    "indices.1": {
+      "input": ["indices.1", "indices_increment"],
+      "output": ["indices.2"],
+      "op_type": "Add"
+    },
+    "indices.2": {
+      "input": ["indices.2", "indices_increment"],
+      "output": ["indices.3"],
+      "op_type": "Add"
+    },
+    "indices.3": {
+      "input": ["indices.3", "indices_increment"],
+      "output": ["indices.4"],
+      "op_type": "Add"
+    },
+    "indices.4": {
+      "input": ["indices.4", "indices_increment"],
+      "output": ["indices.5"],
+      "op_type": "Add"
+    },
+    "indices.5": {
+      "input": ["indices.5", "indices_increment"],
+      "output": ["indices.6"],
+      "op_type": "Add"
+    },
+    "indices.6": {
+      "input": ["indices.6", "indices_increment"],
+      "output": ["indices.7"],
+      "op_type": "Add"
+    },
+    "indices.7": {
+      "input": ["indices.7", "indices_increment"],
+      "output": ["indices.8"],
+      "op_type": "Add"
+    },
+    "indices.8": {
+      "input": ["indices.8", "indices_increment"],
+      "output": ["indices.9"],
+      "op_type": "Add"
+    },
+    "indices.9": {
+      "input": ["indices.9", "indices_increment"],
+      "output": ["indices.10"],
+      "op_type": "Add"
+    },
+    "indices.10": {
+      "input": ["indices.10", "indices_increment"],
+      "output": ["indices.11"],
+      "op_type": "Add"
+    },
+    "indices.11": {
+      "input": ["indices.11", "indices_increment"],
+      "output": ["indices.12"],
+      "op_type": "Add"
+    },
+    "indices.12": {
+      "input": ["indices.12", "indices_increment"],
+      "output": ["indices.13"],
+      "op_type": "Add"
+    },
+    "indices.13": {
+      "input": ["indices.13", "indices_increment"],
+      "output": ["indices.14"],
+      "op_type": "Add"
+    },
+    "indices.14": {
+      "input": ["indices.14", "indices_increment"],
+      "output": ["indices.15"],
+      "op_type": "Add"
+    },
+    "indices.15": {
+      "input": ["indices.15", "indices_increment"],
+      "output": ["indices.16"],
+      "op_type": "Add"
+    },
+    "indices.16": {
+      "input": ["indices.16", "indices_increment"],
+      "output": ["indices.17"],
+      "op_type": "Add"
+    },
+    "indices.17": {
+      "input": ["indices.17", "indices_increment"],
+      "output": ["indices.18"],
+      "op_type": "Add"
+    },
+    "indices.18": {
+      "input": ["indices.18", "indices_increment"],
+      "output": ["indices.19"],
+      "op_type": "Add"
+    },
+    "indices.19": {
+      "input": ["indices.19", "indices_increment"],
+      "output": ["indices.20"],
+      "op_type": "Add"
+    },
+    "indices.20": {
+      "input": ["indices.20", "indices_increment"],
+      "output": ["indices.21"],
+      "op_type": "Add"
+    },
+    "indices.21": {
+      "input": ["indices.21", "indices_increment"],
+      "output": ["indices.22"],
+      "op_type": "Add"
+    },
+    "indices.22": {
+      "input": ["indices.22", "indices_increment"],
+      "output": ["indices.23"],
+      "op_type": "Add"
+    },
+    "indices.23": {
+      "input": ["indices.23", "indices_increment"],
+      "output": ["indices.24"],
+      "op_type": "Add"
+    },
+    "indices.24": {
+      "input": ["indices.24", "indices_increment"],
+      "output": ["indices.25"],
+      "op_type": "Add"
+    },
+    "indices.25": {
+      "input": ["indices.25", "indices_increment"],
+      "output": ["indices.26"],
+      "op_type": "Add"
+    },
+    "indices.26": {
+      "input": ["indices.26", "indices_increment"],
+      "output": ["indices.27"],
+      "op_type": "Add"
+    },
+    "indices.27": {
+      "input": ["indices.27", "indices_increment"],
+      "output": ["indices.28"],
+      "op_type": "Add"
+    },
+    "indices.28": {
+      "input": ["indices.28", "indices_increment"],
+      "output": ["indices.29"],
+      "op_type": "Add"
+    },
+    "indices.29": {
+      "input": ["indices.29", "indices_increment"],
+      "output": ["indices.30"],
+      "op_type": "Add"
+    },
+    "indices.30": {
+      "input": ["indices.30", "indices_increment"],
+      "output": ["indices.31"],
+      "op_type": "Add"
+    },
+    "indices.31": {
+      "input": ["indices.31", "indices_increment"],
+      "output": ["indices.32"],
+      "op_type": "Add"
+    },
+    "indices.32": {
+      "input": ["indices.32", "indices_increment"],
+      "output": ["indices.33"],
+      "op_type": "Add"
+    },
+    "indices.33": {
+      "input": ["indices.33", "indices_increment"],
+      "output": ["indices.34"],
+      "op_type": "Add"
+    },
+    "indices.34": {
+      "input": ["indices.34", "indices_increment"],
+      "output": ["indices.35"],
+      "op_type": "Add"
+    },
+    "indices.35": {
+      "input": ["indices.35", "indices_increment"],
+      "output": ["indices.36"],
+      "op_type": "Add"
+    },
+    "indices.36": {
+      "input": ["indices.36", "indices_increment"],
+      "output": ["indices.37"],
+      "op_type": "Add"
+    },
+    "indices.37": {
+      "input": ["indices.37", "indices_increment"],
+      "output": ["indices.38"],
+      "op_type": "Add"
+    },
+    "indices.38": {
+      "input": ["indices.38", "indices_increment"],
+      "output": ["indices.39"],
+      "op_type": "Add"
+    },
+    "indices.39": {
+      "input": ["indices.39", "indices_increment"],
+      "output": ["indices.40"],
+      "op_type": "Add"
+    },
+    "indices.40": {
+      "input": ["indices.40", "indices_increment"],
+      "output": ["indices.41"],
+      "op_type": "Add"
+    },
+    "indices.41": {
+      "input": ["indices.41", "indices_increment"],
+      "output": ["indices.42"],
+      "op_type": "Add"
+    },
+    "indices.42": {
+      "input": ["indices.42", "indices_increment"],
+      "output": ["indices.43"],
+      "op_type": "Add"
+    },
+    "indices.43": {
+      "input": ["indices.43", "indices_increment"],
+      "output": ["indices.44"],
+      "op_type": "Add"
+    },
+    "indices.44": {
+      "input": ["indices.44", "indices_increment"],
+      "output": ["indices.45"],
+      "op_type": "Add"
+    },
+    "indices.45": {
+      "input": ["indices.45", "indices_increment"],
+      "output": ["indices.46"],
+      "op_type": "Add"
+    },
+    "indices.46": {
+      "input": ["indices.46", "indices_increment"],
+      "output": ["indices.47"],
+      "op_type": "Add"
+    },
+    "/blocks.0/attn/key/MatMul_output_0": {
+      "input": ["/blocks.0/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.0"],
+      "op_type": "Reshape"
+    },
+    "/blocks.0/attn/value/Add_output_0": {
+      "input": ["/blocks.0/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.1"],
+      "op_type": "Reshape"
+    },
+    "/blocks.1/attn/key/MatMul_output_0": {
+      "input": ["/blocks.1/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.2"],
+      "op_type": "Reshape"
+    },
+    "/blocks.1/attn/value/Add_output_0": {
+      "input": ["/blocks.1/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.3"],
+      "op_type": "Reshape"
+    },
+    "/blocks.2/attn/key/MatMul_output_0": {
+      "input": ["/blocks.2/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.4"],
+      "op_type": "Reshape"
+    },
+    "/blocks.2/attn/value/Add_output_0": {
+      "input": ["/blocks.2/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.5"],
+      "op_type": "Reshape"
+    },
+    "/blocks.3/attn/key/MatMul_output_0": {
+      "input": ["/blocks.3/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.6"],
+      "op_type": "Reshape"
+    },
+    "/blocks.3/attn/value/Add_output_0": {
+      "input": ["/blocks.3/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.7"],
+      "op_type": "Reshape"
+    },
+    "/blocks.4/attn/key/MatMul_output_0": {
+      "input": ["/blocks.4/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.8"],
+      "op_type": "Reshape"
+    },
+    "/blocks.4/attn/value/Add_output_0": {
+      "input": ["/blocks.4/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.9"],
+      "op_type": "Reshape"
+    },
+    "/blocks.5/attn/key/MatMul_output_0": {
+      "input": ["/blocks.5/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.10"],
+      "op_type": "Reshape"
+    },
+    "/blocks.5/attn/value/Add_output_0": {
+      "input": ["/blocks.5/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.11"],
+      "op_type": "Reshape"
+    },
+    "/blocks.6/attn/key/MatMul_output_0": {
+      "input": ["/blocks.6/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.12"],
+      "op_type": "Reshape"
+    },
+    "/blocks.6/attn/value/Add_output_0": {
+      "input": ["/blocks.6/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.13"],
+      "op_type": "Reshape"
+    },
+    "/blocks.7/attn/key/MatMul_output_0": {
+      "input": ["/blocks.7/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.14"],
+      "op_type": "Reshape"
+    },
+    "/blocks.7/attn/value/Add_output_0": {
+      "input": ["/blocks.7/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.15"],
+      "op_type": "Reshape"
+    },
+    "/blocks.8/attn/key/MatMul_output_0": {
+      "input": ["/blocks.8/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.16"],
+      "op_type": "Reshape"
+    },
+    "/blocks.8/attn/value/Add_output_0": {
+      "input": ["/blocks.8/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.17"],
+      "op_type": "Reshape"
+    },
+    "/blocks.9/attn/key/MatMul_output_0": {
+      "input": ["/blocks.9/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.18"],
+      "op_type": "Reshape"
+    },
+    "/blocks.9/attn/value/Add_output_0": {
+      "input": ["/blocks.9/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.19"],
+      "op_type": "Reshape"
+    },
+    "/blocks.10/attn/key/MatMul_output_0": {
+      "input": ["/blocks.10/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.20"],
+      "op_type": "Reshape"
+    },
+    "/blocks.10/attn/value/Add_output_0": {
+      "input": ["/blocks.10/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.21"],
+      "op_type": "Reshape"
+    },
+    "/blocks.11/attn/key/MatMul_output_0": {
+      "input": ["/blocks.11/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.22"],
+      "op_type": "Reshape"
+    },
+    "/blocks.11/attn/value/Add_output_0": {
+      "input": ["/blocks.11/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.23"],
+      "op_type": "Reshape"
+    },
+    "/blocks.12/attn/key/MatMul_output_0": {
+      "input": ["/blocks.12/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.24"],
+      "op_type": "Reshape"
+    },
+    "/blocks.12/attn/value/Add_output_0": {
+      "input": ["/blocks.12/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.25"],
+      "op_type": "Reshape"
+    },
+    "/blocks.13/attn/key/MatMul_output_0": {
+      "input": ["/blocks.13/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.26"],
+      "op_type": "Reshape"
+    },
+    "/blocks.13/attn/value/Add_output_0": {
+      "input": ["/blocks.13/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.27"],
+      "op_type": "Reshape"
+    },
+    "/blocks.14/attn/key/MatMul_output_0": {
+      "input": ["/blocks.14/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.28"],
+      "op_type": "Reshape"
+    },
+    "/blocks.14/attn/value/Add_output_0": {
+      "input": ["/blocks.14/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.29"],
+      "op_type": "Reshape"
+    },
+    "/blocks.15/attn/key/MatMul_output_0": {
+      "input": ["/blocks.15/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.30"],
+      "op_type": "Reshape"
+    },
+    "/blocks.15/attn/value/Add_output_0": {
+      "input": ["/blocks.15/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.31"],
+      "op_type": "Reshape"
+    },
+    "/blocks.16/attn/key/MatMul_output_0": {
+      "input": ["/blocks.16/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.32"],
+      "op_type": "Reshape"
+    },
+    "/blocks.16/attn/value/Add_output_0": {
+      "input": ["/blocks.16/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.33"],
+      "op_type": "Reshape"
+    },
+    "/blocks.17/attn/key/MatMul_output_0": {
+      "input": ["/blocks.17/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.34"],
+      "op_type": "Reshape"
+    },
+    "/blocks.17/attn/value/Add_output_0": {
+      "input": ["/blocks.17/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.35"],
+      "op_type": "Reshape"
+    },
+    "/blocks.18/attn/key/MatMul_output_0": {
+      "input": ["/blocks.18/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.36"],
+      "op_type": "Reshape"
+    },
+    "/blocks.18/attn/value/Add_output_0": {
+      "input": ["/blocks.18/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.37"],
+      "op_type": "Reshape"
+    },
+    "/blocks.19/attn/key/MatMul_output_0": {
+      "input": ["/blocks.19/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.38"],
+      "op_type": "Reshape"
+    },
+    "/blocks.19/attn/value/Add_output_0": {
+      "input": ["/blocks.19/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.39"],
+      "op_type": "Reshape"
+    },
+    "/blocks.20/attn/key/MatMul_output_0": {
+      "input": ["/blocks.20/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.40"],
+      "op_type": "Reshape"
+    },
+    "/blocks.20/attn/value/Add_output_0": {
+      "input": ["/blocks.20/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.41"],
+      "op_type": "Reshape"
+    },
+    "/blocks.21/attn/key/MatMul_output_0": {
+      "input": ["/blocks.21/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.42"],
+      "op_type": "Reshape"
+    },
+    "/blocks.21/attn/value/Add_output_0": {
+      "input": ["/blocks.21/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.43"],
+      "op_type": "Reshape"
+    },
+    "/blocks.22/attn/key/MatMul_output_0": {
+      "input": ["/blocks.22/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.44"],
+      "op_type": "Reshape"
+    },
+    "/blocks.22/attn/value/Add_output_0": {
+      "input": ["/blocks.22/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.45"],
+      "op_type": "Reshape"
+    },
+    "/blocks.23/attn/key/MatMul_output_0": {
+      "input": ["/blocks.23/attn/key/MatMul_output_0", "updates_shape"],
+      "output": ["updates.46"],
+      "op_type": "Reshape"
+    },
+    "/blocks.23/attn/value/Add_output_0": {
+      "input": ["/blocks.23/attn/value/Add_output_0", "updates_shape"],
+      "output": ["updates.47"],
+      "op_type": "Reshape"
+    }
+  },
+  "initializer": [
+    {
+      "name": "zero_int64_scalar",
+      "value": 0,
+      "dtype": "int64"
+    },
+    {
+      "name": "one_int64_scalar",
+      "value": 1,
+      "dtype": "int64"
+    },
+    {
+      "name": "zero_int64_dim1",
+      "value": [0],
+      "dtype": "int64"
+    },
+    {
+      "name": "one_int64_dim1",
+      "value": [1],
+      "dtype": "int64"
+    },
+    {
+      "name": "1024_int64_dim1",
+      "value": [1024],
+      "dtype": "int64"
+    },
+    {
+      "name": "indices_base_b.shape",
+      "value": [1, -1, 1, 1],
+      "dtype": "int64"
+    },
+    {
+      "name": "indices_base_c.shape",
+      "value": [1, 1, -1, 1],
+      "dtype": "int64"
+    },
+    {
+      "name": "indices_increment",
+      "value": [1, 0, 0],
+      "dtype": "int64"
+    }
+  ]
+}
