@@ -16,6 +16,9 @@ from .const import fix_kv_cache
 export_encoder = False
 export_decoder = False
 
+import_encoder = False
+import_decoder = False
+
 model_name = "undefined"
 opset = -1
 
@@ -143,6 +146,7 @@ class PyTorchInference(Inference):
         self.model: "Whisper" = model
         self.initial_token_length = initial_token_length
         self.kv_cache = None
+        self.onnx_decoder = None
 
     def logits(self, tokens: Tensor, audio_features: Tensor) -> Tensor:
         n_group = tokens.shape[0]
@@ -188,8 +192,17 @@ class PyTorchInference(Inference):
             )
             print("<------------------")
             exit()
-        kv_cache = torch.from_numpy(self.kv_cache).to(audio_features.device, audio_features.dtype)
-        output, self.kv_cache = self.model.decoder(tokens, audio_features, kv_cache=kv_cache, offset=torch.tensor(offset))
+        elif import_decoder:
+            if self.onnx_decoder == None:
+                import onnxruntime
+                self.onnx_decoder = onnxruntime.InferenceSession('export_model/decoder_'+model_name+'_opset'+str(opset)+'.onnx')
+            offset_np = np.array(offset, dtype=np.int64)
+            output, self.kv_cache = self.onnx_decoder.run(None, {'tokens': tokens.numpy(), 'audio_features':audio_features.numpy(), 'kv_cache':self.kv_cache, 'offset':offset_np})
+            output = torch.from_numpy(output)
+            self.kv_cache = torch.from_numpy(self.kv_cache)
+        else:
+            kv_cache = torch.from_numpy(self.kv_cache).to(audio_features.device, audio_features.dtype)
+            output, self.kv_cache = self.model.decoder(tokens, audio_features, kv_cache=kv_cache, offset=torch.tensor(offset))
         self.kv_cache = self.kv_cache[:, :, :length, :].cpu().detach().numpy()
         return output
 
@@ -488,6 +501,7 @@ class DecodingTask:
 
     def __init__(self, model: "Whisper", options: DecodingOptions):
         self.model = model
+        self.onnx_encoder = None
 
         language = options.language or "en"
         tokenizer = get_tokenizer(
@@ -619,6 +633,11 @@ class DecodingTask:
             )
             print("<------------------")
             exit()
+        elif import_encoder:
+            if self.onnx_encoder == None:
+                import onnxruntime
+                self.onnx_encoder = onnxruntime.InferenceSession('export_model/encoder_'+model_name+'_opset'+str(opset)+'.onnx')
+            audio_features = torch.from_numpy(self.onnx_encoder.run(None, {'mel': mel.numpy()})[0])
         else:
             audio_features = self.model.encoder(mel)
 
@@ -648,7 +667,7 @@ class DecodingTask:
         try:
             for i in range(self.sample_len):
                 logits = self.inference.logits(tokens, audio_features)
-                print(f"step: {i}", flush=True)
+                #print(f"step: {i}", flush=True)
 
                 if i == 0 and self.tokenizer.no_speech is not None:  # save no_speech_probs
                     probs_at_sot = logits[:, self.sot_index].float().softmax(dim=-1)

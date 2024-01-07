@@ -343,6 +343,10 @@ def cli():
 
     parser.add_argument("--export_encoder",  action='store_true')
     parser.add_argument("--export_decoder",  action='store_true')
+
+    parser.add_argument("--import_encoder",  action='store_true')
+    parser.add_argument("--import_decoder",  action='store_true')
+
     parser.add_argument("--fine_tuning",  type=str, default=None)
     
     args = parser.parse_args().__dict__
@@ -362,6 +366,10 @@ def cli():
         decoding.export_encoder = True
     if args.pop("export_decoder"):
         decoding.export_decoder = True
+    if args.pop("import_encoder"):
+        decoding.import_encoder = True
+    if args.pop("import_decoder"):
+        decoding.import_decoder = True
 
     if model_name.endswith(".en") and args["language"] not in {"en", "English"}:
         warnings.warn(f"{model_name} is an English-only model but receipted '{args['language']}'; using English instead.")
