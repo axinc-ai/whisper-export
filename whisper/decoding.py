@@ -16,6 +16,12 @@ from .const import fix_kv_cache
 export_encoder = False
 export_decoder = False
 
+import_encoder = False
+import_decoder = False
+
+model_name = "undefined"
+opset = -1
+
 
 if TYPE_CHECKING:
     from .model import Whisper
@@ -140,6 +146,7 @@ class PyTorchInference(Inference):
         self.model: "Whisper" = model
         self.initial_token_length = initial_token_length
         self.kv_cache = None
+        self.onnx_decoder = None
 
     def logits(self, tokens: Tensor, audio_features: Tensor) -> Tensor:
         n_group = tokens.shape[0]
@@ -172,9 +179,9 @@ class PyTorchInference(Inference):
             torch.onnx.export(
                 self.model.decoder,
                 (tokens, audio_features, torch.from_numpy(self.kv_cache), torch.tensor(offset)),
-                "export_model/decoder.onnx",
+                "export_model/decoder_"+model_name+"_opset"+str(opset)+".onnx",
                 verbose=False,
-                opset_version=11,
+                opset_version=opset,
                 input_names=["tokens", "audio_features", "kv_cache", "offset"],
                 output_names=["logits", "output_kv_cache"],
                 dynamic_axes={
@@ -185,8 +192,17 @@ class PyTorchInference(Inference):
             )
             print("<------------------")
             exit()
-        kv_cache = torch.from_numpy(self.kv_cache).to(audio_features.device, audio_features.dtype)
-        output, self.kv_cache = self.model.decoder(tokens, audio_features, kv_cache=kv_cache, offset=torch.tensor(offset))
+        elif import_decoder:
+            if self.onnx_decoder == None:
+                import onnxruntime
+                self.onnx_decoder = onnxruntime.InferenceSession('export_model/decoder_'+model_name+'_opset'+str(opset)+'.onnx')
+            offset_np = np.array(offset, dtype=np.int64)
+            output, self.kv_cache = self.onnx_decoder.run(None, {'tokens': tokens.numpy(), 'audio_features':audio_features.numpy(), 'kv_cache':self.kv_cache, 'offset':offset_np})
+            output = torch.from_numpy(output)
+            self.kv_cache = torch.from_numpy(self.kv_cache)
+        else:
+            kv_cache = torch.from_numpy(self.kv_cache).to(audio_features.device, audio_features.dtype)
+            output, self.kv_cache = self.model.decoder(tokens, audio_features, kv_cache=kv_cache, offset=torch.tensor(offset))
         self.kv_cache = self.kv_cache[:, :, :length, :].cpu().detach().numpy()
         return output
 
@@ -440,7 +456,10 @@ class SuppressTokens(LogitFilter):
 
 class ApplyTimestampRules(LogitFilter):
     def __init__(
-        self, tokenizer: Tokenizer, sample_begin: int, max_initial_timestamp_index: Optional[int]
+        self,
+        tokenizer: Tokenizer,
+        sample_begin: int,
+        max_initial_timestamp_index: Optional[int],
     ):
         self.tokenizer = tokenizer
         self.sample_begin = sample_begin
@@ -453,9 +472,14 @@ class ApplyTimestampRules(LogitFilter):
 
         # timestamps have to appear in pairs, except directly before EOT; mask logits accordingly
         for k in range(tokens.shape[0]):
-            seq = [t for t in tokens[k, self.sample_begin :].tolist()]
-            last_was_timestamp = len(seq) >= 1 and seq[-1] >= self.tokenizer.timestamp_begin
-            penultimate_was_timestamp = len(seq) < 2 or seq[-2] >= self.tokenizer.timestamp_begin
+            sampled_tokens = tokens[k, self.sample_begin :]
+            seq = [t for t in sampled_tokens.tolist()]
+            last_was_timestamp = (
+                len(seq) >= 1 and seq[-1] >= self.tokenizer.timestamp_begin
+            )
+            penultimate_was_timestamp = (
+                len(seq) < 2 or seq[-2] >= self.tokenizer.timestamp_begin
+            )
 
             if last_was_timestamp:
                 if penultimate_was_timestamp:  # has to be non-timestamp
@@ -463,18 +487,39 @@ class ApplyTimestampRules(LogitFilter):
                 else:  # cannot be normal text tokens
                     logits[k, : self.tokenizer.eot] = -np.inf
 
-        # apply the `max_initial_timestamp` option
-        if tokens.shape[1] == self.sample_begin and self.max_initial_timestamp_index is not None:
-            last_allowed = self.tokenizer.timestamp_begin + self.max_initial_timestamp_index
-            logits[:, last_allowed + 1 :] = -np.inf
+            timestamps = sampled_tokens[
+                sampled_tokens.ge(self.tokenizer.timestamp_begin)
+            ]
+            if timestamps.numel() > 0:
+                # timestamps shouldn't decrease; forbid timestamp tokens smaller than the last
+                # also force each segment to have a nonzero length, to prevent infinite looping
+                if last_was_timestamp and not penultimate_was_timestamp:
+                    timestamp_last = timestamps[-1]
+                else:
+                    timestamp_last = timestamps[-1] + 1
+                logits[k, self.tokenizer.timestamp_begin : timestamp_last] = -np.inf
+
+        if tokens.shape[1] == self.sample_begin:
+            # suppress generating non-timestamp tokens at the beginning
+            logits[:, : self.tokenizer.timestamp_begin] = -np.inf
+
+            # apply the `max_initial_timestamp` option
+            if self.max_initial_timestamp_index is not None:
+                last_allowed = (
+                    self.tokenizer.timestamp_begin + self.max_initial_timestamp_index
+                )
+                logits[:, last_allowed + 1 :] = -np.inf
 
         # if sum of probability over timestamps is above any other token, sample timestamp
         logprobs = F.log_softmax(logits.float(), dim=-1)
         for k in range(tokens.shape[0]):
-            timestamp_logprob = logprobs[k, self.tokenizer.timestamp_begin :].logsumexp(dim=-1)
+            timestamp_logprob = logprobs[k, self.tokenizer.timestamp_begin :].logsumexp(
+                dim=-1
+            )
             max_text_token_logprob = logprobs[k, : self.tokenizer.timestamp_begin].max()
             if timestamp_logprob > max_text_token_logprob:
                 logits[k, : self.tokenizer.timestamp_begin] = -np.inf
+
 
 
 class DecodingTask:
@@ -485,6 +530,7 @@ class DecodingTask:
 
     def __init__(self, model: "Whisper", options: DecodingOptions):
         self.model = model
+        self.onnx_encoder = None
 
         language = options.language or "en"
         tokenizer = get_tokenizer(
@@ -609,13 +655,18 @@ class DecodingTask:
             from torch.autograd import Variable
             x = Variable(mel)
             torch.onnx.export(
-                self.model.encoder, x, 'export_model/encoder.onnx',
+                self.model.encoder, x, 'export_model/encoder_'+model_name+'_opset'+str(opset)+'.onnx',
                 input_names=["mel"],
                 output_names=["audio_features"],
-                verbose=False, opset_version=11
+                verbose=False, opset_version=opset
             )
             print("<------------------")
             exit()
+        elif import_encoder:
+            if self.onnx_encoder == None:
+                import onnxruntime
+                self.onnx_encoder = onnxruntime.InferenceSession('export_model/encoder_'+model_name+'_opset'+str(opset)+'.onnx')
+            audio_features = torch.from_numpy(self.onnx_encoder.run(None, {'mel': mel.numpy()})[0])
         else:
             audio_features = self.model.encoder(mel)
 
@@ -645,7 +696,7 @@ class DecodingTask:
         try:
             for i in range(self.sample_len):
                 logits = self.inference.logits(tokens, audio_features)
-                print(f"step: {i}", flush=True)
+                #print(f"step: {i}", flush=True)
 
                 if i == 0 and self.tokenizer.no_speech is not None:  # save no_speech_probs
                     probs_at_sot = logits[:, self.sot_index].float().softmax(dim=-1)

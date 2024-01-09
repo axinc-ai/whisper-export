@@ -113,36 +113,78 @@ def transcribe(
         task=task,
     )
 
+    #def decode_with_fallback(segment: torch.Tensor) -> List[DecodingResult]:
+    #    temperatures = [temperature] if isinstance(temperature, (int, float)) else temperature
+    #    kwargs = {**decode_options}
+    #    t = temperatures[0]
+    #    if t == 0:
+    #        best_of = kwargs.pop("best_of", None)
+    #    else:
+    #        best_of = kwargs.get("best_of", None)
+
+    #    options = DecodingOptions(**kwargs, temperature=t)
+    #    results = model.decode(segment, options)
+
+    #    kwargs.pop("beam_size", None)  # no beam search for t > 0
+    #    kwargs.pop("patience", None)  # no patience for t > 0
+    #    kwargs["best_of"] = best_of  # enable best_of for t > 0
+    #    for t in temperatures[1:]:
+    #        needs_fallback = [
+    #            compression_ratio_threshold is not None
+    #            and result.compression_ratio > compression_ratio_threshold
+    #            or logprob_threshold is not None
+    #            and result.avg_logprob < logprob_threshold
+    #            for result in results
+    #        ]
+    #        if any(needs_fallback):
+    #            print("temperature", t)
+    #            options = DecodingOptions(**kwargs, temperature=t)
+    #            retries = model.decode(segment[needs_fallback], options)
+    #            for retry_index, original_index in enumerate(np.nonzero(needs_fallback)[0]):
+    #                results[original_index] = retries[retry_index]
+
+    #    return results
+
     def decode_with_fallback(segment: torch.Tensor) -> List[DecodingResult]:
-        temperatures = [temperature] if isinstance(temperature, (int, float)) else temperature
-        kwargs = {**decode_options}
-        t = temperatures[0]
-        if t == 0:
-            best_of = kwargs.pop("best_of", None)
-        else:
-            best_of = kwargs.get("best_of", None)
+        temperatures = (
+            [temperature] if isinstance(temperature, (int, float)) else temperature
+        )
+        decode_result = None
 
-        options = DecodingOptions(**kwargs, temperature=t)
-        results = model.decode(segment, options)
+        for t in temperatures:
+            kwargs = {**decode_options}
+            if t > 0:
+                # disable beam_size and patience when t > 0
+                kwargs.pop("beam_size", None)
+                kwargs.pop("patience", None)
+                print("temperature", t)
+            else:
+                # disable best_of when t == 0
+                kwargs.pop("best_of", None)
 
-        kwargs.pop("beam_size", None)  # no beam search for t > 0
-        kwargs.pop("patience", None)  # no patience for t > 0
-        kwargs["best_of"] = best_of  # enable best_of for t > 0
-        for t in temperatures[1:]:
-            needs_fallback = [
+            options = DecodingOptions(**kwargs, temperature=t)
+            decode_result = model.decode(segment, options)[0]
+
+            needs_fallback = False
+            if (
                 compression_ratio_threshold is not None
-                and result.compression_ratio > compression_ratio_threshold
-                or logprob_threshold is not None
-                and result.avg_logprob < logprob_threshold
-                for result in results
-            ]
-            if any(needs_fallback):
-                options = DecodingOptions(**kwargs, temperature=t)
-                retries = model.decode(segment[needs_fallback], options)
-                for retry_index, original_index in enumerate(np.nonzero(needs_fallback)[0]):
-                    results[original_index] = retries[retry_index]
+                and decode_result.compression_ratio > compression_ratio_threshold
+            ):
+                needs_fallback = True  # too repetitive
+            if (
+                logprob_threshold is not None
+                and decode_result.avg_logprob < logprob_threshold
+            ):
+                needs_fallback = True  # average log probability is too low
+            if (
+                no_speech_threshold is not None
+                and decode_result.no_speech_prob > no_speech_threshold
+            ):
+                needs_fallback = False  # silence
+            if not needs_fallback:
+                break
 
-        return results
+        return [decode_result]
 
     seek = 0
     input_stride = exact_div(
@@ -317,6 +359,7 @@ def cli():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("audio", nargs="+", type=str, help="audio file(s) to transcribe")
     parser.add_argument("--model", default="small", choices=available_models(), help="name of the Whisper model to use")
+    parser.add_argument("--opset", default=17, choices=[11, 17], help="opset of the ONNX")
     parser.add_argument("--device", default="cpu", help="device to use for PyTorch inference")
     parser.add_argument("--output_dir", "-o", type=str, default=".", help="directory to save the outputs")
     parser.add_argument("--verbose", type=str2bool, default=True, help="whether to print out the progress and debug messages")
@@ -342,6 +385,10 @@ def cli():
 
     parser.add_argument("--export_encoder",  action='store_true')
     parser.add_argument("--export_decoder",  action='store_true')
+
+    parser.add_argument("--import_encoder",  action='store_true')
+    parser.add_argument("--import_decoder",  action='store_true')
+
     parser.add_argument("--fine_tuning",  type=str, default=None)
     
     args = parser.parse_args().__dict__
@@ -351,10 +398,20 @@ def cli():
     os.makedirs(output_dir, exist_ok=True)
 
     mod_model.model_name = model_name
+
+    opset: int = args.pop("opset")
+
+    decoding.model_name = model_name
+    decoding.opset = opset
+
     if args.pop("export_encoder"):
         decoding.export_encoder = True
     if args.pop("export_decoder"):
         decoding.export_decoder = True
+    if args.pop("import_encoder"):
+        decoding.import_encoder = True
+    if args.pop("import_decoder"):
+        decoding.import_decoder = True
 
     if model_name.endswith(".en") and args["language"] not in {"en", "English"}:
         warnings.warn(f"{model_name} is an English-only model but receipted '{args['language']}'; using English instead.")
