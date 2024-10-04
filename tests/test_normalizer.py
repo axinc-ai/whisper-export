@@ -1,7 +1,10 @@
 import pytest
 
 from whisper.normalizers import EnglishTextNormalizer
-from whisper.normalizers.english import EnglishNumberNormalizer, EnglishSpellingNormalizer
+from whisper.normalizers.english import (
+    EnglishNumberNormalizer,
+    EnglishSpellingNormalizer,
+)
 
 
 @pytest.mark.parametrize("std", [EnglishNumberNormalizer(), EnglishTextNormalizer()])
@@ -84,6 +87,7 @@ def test_text_normalizer():
     assert std("he's like") == "he is like"
     assert std("she's been like") == "she has been like"
     assert std("10km") == "10 km"
+    assert std("10mm") == "10 mm"
     assert std("RC232") == "rc 232"
 
     assert (
