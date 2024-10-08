@@ -8,6 +8,8 @@ import numpy as np
 import torch
 import tqdm
 
+from . import decoding
+from . import model as mod_model
 from .audio import (
     FRAMES_PER_SECOND,
     HOP_LENGTH,
@@ -532,6 +534,9 @@ def cli():
     parser.add_argument("--condition_on_previous_text", type=str2bool, default=True, help="if True, provide the previous output of the model as a prompt for the next window; disabling may make the text inconsistent across windows, but the model becomes less prone to getting stuck in a failure loop")
     parser.add_argument("--fp16", type=str2bool, default=True, help="whether to perform inference in fp16; True by default")
 
+    parser.add_argument("--export_encoder",  action='store_true')
+    parser.add_argument("--export_decoder",  action='store_true')
+
     parser.add_argument("--temperature_increment_on_fallback", type=optional_float, default=0.2, help="temperature to increase when falling back when the decoding fails to meet either of the thresholds below")
     parser.add_argument("--compression_ratio_threshold", type=optional_float, default=2.4, help="if the gzip compression ratio is higher than this value, treat the decoding as failed")
     parser.add_argument("--logprob_threshold", type=optional_float, default=-1.0, help="if the average log probability is lower than this value, treat the decoding as failed")
@@ -555,6 +560,12 @@ def cli():
     output_format: str = args.pop("output_format")
     device: str = args.pop("device")
     os.makedirs(output_dir, exist_ok=True)
+
+    mod_model.model_name = model_name
+    if args.pop("export_encoder"):
+        decoding.export_encoder = True
+    if args.pop("export_decoder"):
+        decoding.export_decoder = True
 
     if model_name.endswith(".en") and args["language"] not in {"en", "English"}:
         if args["language"] is not None:
