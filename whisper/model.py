@@ -116,12 +116,14 @@ class MultiHeadAttention(nn.Module):
             # small: 12
             # medium: 24
             # large: 32
+            # turbo: 32
             key_id = self.layer_id - (
                 4 if model_name.startswith("tiny") else
                 6 if model_name.startswith("base") else
                 12 if model_name.startswith("small") else
                 24 if model_name.startswith("medium") else
-                32 if model_name.startswith("large") else 32)
+                32 if model_name.startswith("large") else
+                32 if model_name.startswith("turbo") else 32)
             value_id = key_id + 1
             size = k.shape[1]
             if fix_kv_cache:
@@ -355,6 +357,8 @@ class Whisper(nn.Module):
             size = [48, n_group, length, 1024]
         elif self.name == "large":
             size = [64, n_group, length, 1280]
+        elif self.name == "turbo":
+            size = [8, n_group, length, 1280]
         else:
             raise ValueError(f"Unsupported model type: {self.name}")
         return torch.zeros(size, dtype=torch.float32, device=self.device)
